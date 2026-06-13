@@ -126,3 +126,15 @@ The chat preflight check now uses the same model/rate catalog strategy as the mo
 3. only report missing pricing when neither source has prompt/completion pricing for that model.
 
 That keeps first-run chat from showing an unknown-cost warning simply because `.apex-web/rates/openrouter.models.json` has not been created yet. For billing-sensitive work, still refresh rates from OpenRouter first.
+
+
+If pricing is still unknown in the modal, seed or refresh the file the API workdir uses:
+
+```bash
+mkdir -p .apex-web/rates
+apex rates seed --out .apex-web/rates/openrouter.models.json
+# or, for current live data:
+apex models refresh --out .apex-web/rates/openrouter.models.json
+```
+
+Restart the Flask API after changing rate files if the UI still shows stale data.

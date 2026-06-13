@@ -1,6 +1,6 @@
 [project]
 name = "apex-dev-tools"
-version = "0.18.0"
+version = "0.19.0"
 description = "Apex dev-machine utilities: conversion, indexing, OpenRouter tools, and a Flask/React UI"
 readme = "README.md"
 requires-python = ">=3.10"

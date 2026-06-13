@@ -85,3 +85,21 @@ Or let `.devcontainer/devcontainer.json` do it during Codespaces creation.
 ## Known limits
 
 This is a real layer now, not a magic cathedral. DOCX/PPTX/PDF extraction still cannot perfectly preserve every visual feature. Pandoc is preferred when layout fidelity matters. The pure-Python paths are intentionally practical fallbacks for a constrained dev machine.
+
+
+## Generated output hygiene
+
+Suggested ignored output folders:
+
+```gitignore
+doc_out/
+docs_out/
+conversion_out/
+converted/
+exports/
+generated_outputs/
+tmp_convert/
+tmp_conversion/
+```
+
+Do not ignore every `*.pdf`, `*.docx`, or `*.xlsx` unless the repo will never use those as fixtures/source assets.

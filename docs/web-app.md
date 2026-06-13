@@ -172,3 +172,26 @@ This is intentionally a cockpit over `apex`, not a separate architecture beast h
 ### Cost preflight source
 
 The chat modal estimates cost from the configured rates/model snapshot. If that file is missing, or if it exists but does not contain the selected model, the API falls back to the bundled starter catalog used by the model dropdown. The modal includes the source in the check data returned by `/api/chat/preflight`.
+
+
+## Chat UX
+
+The chat panel supports:
+
+- model dropdown backed by a local snapshot or bundled starter catalog
+- temperature slider plus editable numeric field
+- optional omission of temperature from the request
+- cost preflight modal before live sends
+- saved conversations on disk
+- user/assistant/system message editing
+- message deletion
+- conversation deletion
+- stats for messages, turns, words, characters, and estimated tokens
+
+Saved conversations live under:
+
+```text
+.apex-web/conversations/
+```
+
+Treat that as local state unless you explicitly want to version a fixture.
