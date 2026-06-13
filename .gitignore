@@ -469,7 +469,7 @@ repo-overlay-report*.json
 *.overlay-report.json
 *.orig
 *.rej
-.apex-apply-backups
+.apex-apply-backups/*
 
 # Generated update bundles from this project
 apex_dev_tools_*.zip
