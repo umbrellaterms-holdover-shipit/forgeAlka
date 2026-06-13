@@ -1,0 +1,28 @@
+[project]
+name = "apex-dev-tools"
+version = "0.18.0"
+description = "Apex dev-machine utilities: conversion, indexing, OpenRouter tools, and a Flask/React UI"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["jinja2>=3.1.0"]
+
+[project.optional-dependencies]
+docs = ["python-docx>=0.8.11", "reportlab>=3.6.12", "pypdf>=4.0.0", "markdown-it-py>=3.0.0"]
+spreadsheets = ["openpyxl>=3.1.0"]
+slides = ["python-pptx>=0.6.23"]
+media = ["pillow>=10.0.0", "pydub>=0.25.1"]
+charts = ["matplotlib>=3.7.0"]
+tests = ["pytest>=7.0"]
+web = ["flask>=3.0.0"]
+all = ["python-docx>=0.8.11", "reportlab>=3.6.12", "pypdf>=4.0.0", "markdown-it-py>=3.0.0", "openpyxl>=3.1.0", "python-pptx>=0.6.23", "pillow>=10.0.0", "pydub>=0.25.1", "matplotlib>=3.7.0", "pytest>=7.0", "flask>=3.0.0"]
+
+[project.scripts]
+apex = "apexdev.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["apexdev*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
