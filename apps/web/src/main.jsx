@@ -423,7 +423,7 @@ function ConversationsPanel({ onOpen }) {
       <div className="panel-header">
         <div>
           <h2>Conversations</h2>
-          <p>Disk-backed chat records with stats. Open one to edit/delete messages or continue the thread.</p>
+          <p>Disk-backed chat records with stats. Open one to edit/delete messages or continue the conversation.</p>
         </div>
         <div className="row"><button onClick={refresh}>Refresh</button><button onClick={createBlank}>New conversation</button></div>
       </div>

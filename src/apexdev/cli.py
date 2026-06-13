@@ -398,6 +398,119 @@ def cmd_chunks(args):
 
 
 
+
+def _require_optional_feature(name: str, exc: ImportError):
+    raise SystemExit(f"{name} requires optional dependencies. Run: python -m pip install -e '.[all]'\nMissing import: {exc}") from exc
+
+
+def cmd_image_metadata(args):
+    try:
+        from .media.image_metadata import check_metadata
+    except ImportError as exc:
+        _require_optional_feature("image metadata inspection", exc)
+    check_metadata(Path(args.image))
+
+
+def cmd_flux_distill(args):
+    try:
+        from .media import flux_pipeline
+    except ImportError as exc:
+        _require_optional_feature("flux prompt distillation", exc)
+    argv = ["--source", args.source, "--out", args.out, "--prompt-count", str(args.prompt_count)]
+    flux_pipeline.main(argv)
+
+
+def cmd_flux_variants(args):
+    from .media import flux_subject_variants
+    flux_subject_variants.main(["--base-dir", args.base_dir, "--out-dir", args.out_dir])
+
+
+def cmd_chatter_build(args):
+    try:
+        from .media import audio_chatter_builder
+    except ImportError as exc:
+        _require_optional_feature("audio chatter building", exc)
+    argv = [
+        "--input", args.input,
+        "--output-root", args.output_root,
+        "--track-count", str(args.track_count),
+        "--track-seconds", str(args.track_seconds),
+        "--seed", str(args.seed),
+        "--sample-rate", str(args.sample_rate),
+        "--min-gap", str(args.min_gap),
+        "--max-gap", str(args.max_gap),
+        "--sentence-bitrate", args.sentence_bitrate,
+        "--track-bitrate", args.track_bitrate,
+        "--min-silence-ms", str(args.min_silence_ms),
+        "--keep-silence-ms", str(args.keep_silence_ms),
+        "--minimum-clip-ms", str(args.minimum_clip_ms),
+        "--silence-thresh-offset-db", str(args.silence_thresh_offset_db),
+    ]
+    if args.drop_first_chunk:
+        argv.append("--drop-first-chunk")
+    audio_chatter_builder.main(argv)
+
+
+def cmd_output_trends_extract(args):
+    try:
+        from .analytics.output_trends_export import extract_metrics
+    except ImportError as exc:
+        _require_optional_feature("output trends extraction", exc)
+    argv = ["--zip", args.zip, "--out", args.out, "--session-gap-minutes", str(args.session_gap_minutes)]
+    if args.extract_dir:
+        argv += ["--extract-dir", args.extract_dir]
+    extract_metrics.main(argv)
+
+
+def cmd_output_trends_charts(args):
+    try:
+        from .analytics.output_trends_export import make_charts
+    except ImportError as exc:
+        _require_optional_feature("output trends charts", exc)
+    make_charts.main(["--metrics-dir", args.metrics_dir, "--drop-days", str(args.drop_days)])
+
+
+def cmd_output_trends_peaks(args):
+    try:
+        from .analytics.output_trends_export import make_peaks
+    except ImportError as exc:
+        _require_optional_feature("output trends peaks", exc)
+    argv = ["--zip", args.zip, "--metrics-dir", args.metrics_dir]
+    if args.extract_dir:
+        argv += ["--extract-dir", args.extract_dir]
+    make_peaks.main(argv)
+
+
+def cmd_output_trends_key(args):
+    try:
+        from .analytics.output_trends_export import make_peak_pdf_key
+    except ImportError as exc:
+        _require_optional_feature("output trends PDF key", exc)
+    argv = ["--metrics-dir", args.metrics_dir]
+    if args.render_check:
+        argv.append("--render-check")
+    make_peak_pdf_key.main(argv)
+
+
+def cmd_output_trends_bundle(args):
+    from .analytics.output_trends_export import make_bundle
+    make_bundle.main(["--metrics-dir", args.metrics_dir, "--zip-out", args.zip_out])
+
+
+def cmd_output_trends_run(args):
+    class _A: pass
+    extract = _A(); extract.zip=args.zip; extract.out=args.out; extract.extract_dir=args.extract_dir; extract.session_gap_minutes=args.session_gap_minutes
+    cmd_output_trends_extract(extract)
+    charts = _A(); charts.metrics_dir=args.out; charts.drop_days=args.drop_days
+    cmd_output_trends_charts(charts)
+    peaks = _A(); peaks.zip=args.zip; peaks.metrics_dir=args.out; peaks.extract_dir=args.extract_dir
+    cmd_output_trends_peaks(peaks)
+    key = _A(); key.metrics_dir=args.out; key.render_check=args.render_check
+    cmd_output_trends_key(key)
+    if args.zip_out:
+        bundle = _A(); bundle.metrics_dir=args.out; bundle.zip_out=args.zip_out
+        cmd_output_trends_bundle(bundle)
+
 def cmd_repo_apply(args):
     report = apply_source(
         args.source,
@@ -542,7 +655,26 @@ def main(argv=None) -> int:
     deps_sub = p_deps.add_subparsers(dest="deps_cmd", required=True)
     p = deps_sub.add_parser("doctor"); p.add_argument("tool", nargs="*"); p.add_argument("--out"); p.set_defaults(func=cmd_deps_doctor)
     p = deps_sub.add_parser("install"); p.add_argument("tool", nargs="*"); p.add_argument("--yes", action="store_true"); p.add_argument("--dry-run", action="store_true"); p.add_argument("--force", action="store_true"); p.add_argument("--json", action="store_true"); p.set_defaults(func=cmd_deps_install)
-    p = sub.add_parser("chatter"); p.add_argument("--fragments", required=True); p.add_argument("--out", required=True); p.add_argument("--seed", type=int, default=0); p.set_defaults(func=cmd_chatter)
+
+    p = sub.add_parser("image-metadata", help="inspect image metadata without printing image pixels"); p.add_argument("image"); p.set_defaults(func=cmd_image_metadata)
+
+    p_flux = sub.add_parser("flux", help="prompt corpus distillation and subject variant helpers")
+    flux_sub = p_flux.add_subparsers(dest="flux_cmd", required=True)
+    p = flux_sub.add_parser("distill", help="extract prompt terms, generate prompt samples, and write reports"); p.add_argument("--source", required=True); p.add_argument("--out", required=True); p.add_argument("--prompt-count", type=int, default=720); p.set_defaults(func=cmd_flux_distill)
+    p = flux_sub.add_parser("variants", help="generate male-subject and animal-subject prompt variants from a distillation output"); p.add_argument("--base-dir", required=True); p.add_argument("--out-dir", required=True); p.set_defaults(func=cmd_flux_variants)
+
+    p = sub.add_parser("chatter", help="make a placeholder chatter schedule from text fragments"); p.add_argument("--fragments", required=True); p.add_argument("--out", required=True); p.add_argument("--seed", type=int, default=0); p.set_defaults(func=cmd_chatter)
+    p = sub.add_parser("chatter-build", help="split source audio into clips and build layered chatter tracks")
+    p.add_argument("--input", required=True); p.add_argument("--output-root", default="out_chatter"); p.add_argument("--drop-first-chunk", action="store_true"); p.add_argument("--track-count", type=int, default=360); p.add_argument("--track-seconds", type=int, default=120); p.add_argument("--seed", type=int, default=60526); p.add_argument("--sample-rate", type=int, default=44100); p.add_argument("--min-gap", type=float, default=4.0); p.add_argument("--max-gap", type=float, default=24.0); p.add_argument("--sentence-bitrate", default="96k"); p.add_argument("--track-bitrate", default="160k"); p.add_argument("--min-silence-ms", type=int, default=550); p.add_argument("--keep-silence-ms", type=int, default=110); p.add_argument("--minimum-clip-ms", type=int, default=350); p.add_argument("--silence-thresh-offset-db", type=float, default=-16.0); p.set_defaults(func=cmd_chatter_build)
+
+    p_ot = sub.add_parser("output-trends", help="conversation-export output metrics, charts, peaks, and bundles")
+    ot_sub = p_ot.add_subparsers(dest="output_trends_cmd", required=True)
+    p = ot_sub.add_parser("extract"); p.add_argument("--zip", required=True); p.add_argument("--out", required=True); p.add_argument("--extract-dir"); p.add_argument("--session-gap-minutes", type=float, default=60.0); p.set_defaults(func=cmd_output_trends_extract)
+    p = ot_sub.add_parser("charts"); p.add_argument("--metrics-dir", required=True); p.add_argument("--drop-days", type=int, default=8); p.set_defaults(func=cmd_output_trends_charts)
+    p = ot_sub.add_parser("peaks"); p.add_argument("--zip", required=True); p.add_argument("--metrics-dir", required=True); p.add_argument("--extract-dir"); p.set_defaults(func=cmd_output_trends_peaks)
+    p = ot_sub.add_parser("key"); p.add_argument("--metrics-dir", required=True); p.add_argument("--render-check", action="store_true"); p.set_defaults(func=cmd_output_trends_key)
+    p = ot_sub.add_parser("bundle"); p.add_argument("--metrics-dir", required=True); p.add_argument("--zip-out", required=True); p.set_defaults(func=cmd_output_trends_bundle)
+    p = ot_sub.add_parser("run", help="run extract, charts, peaks, key, and optional bundle in sequence"); p.add_argument("--zip", required=True); p.add_argument("--out", required=True); p.add_argument("--extract-dir"); p.add_argument("--session-gap-minutes", type=float, default=60.0); p.add_argument("--drop-days", type=int, default=8); p.add_argument("--render-check", action="store_true"); p.add_argument("--zip-out"); p.set_defaults(func=cmd_output_trends_run)
     p = sub.add_parser("benchmark"); p.add_argument("--input", required=True); p.add_argument("--out", required=True); p.add_argument("--expected-term", action="append"); p.set_defaults(func=cmd_benchmark)
     p = sub.add_parser("preprocess"); p.add_argument("--input", required=True); p.add_argument("--out", required=True); p.add_argument("--no-dedupe", action="store_true"); p.set_defaults(func=cmd_preprocess)
     p = sub.add_parser("code-windows"); p.add_argument("--input", required=True); p.add_argument("--out", required=True); p.add_argument("--radius", type=int, default=2); p.add_argument("--min-score", type=float, default=5.0); p.set_defaults(func=cmd_code_windows)

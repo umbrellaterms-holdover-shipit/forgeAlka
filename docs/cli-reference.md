@@ -247,3 +247,47 @@ apex tex-validate --input equations.tex --out tex-summary.json
 apex chatter --fragments fragments.txt --out chatter/
 apex benchmark --input evidence.json --out benchmark.md --expected-term pricing
 ```
+
+## Media and prompt utilities
+
+Inspect image metadata:
+
+```bash
+apex image-metadata image.png
+```
+
+Distill a prompt corpus:
+
+```bash
+apex flux distill --source prompts.md --out ./flux_out --prompt-count 720
+```
+
+Generate subject variants from a prompt distillation output:
+
+```bash
+apex flux variants --base-dir ./flux_out --out-dir ./flux_variants
+```
+
+Build layered chatter audio from a source recording:
+
+```bash
+apex chatter-build --input source.mp3 --output-root out_chatter --drop-first-chunk --track-count 360 --track-seconds 120
+```
+
+## Output trends
+
+Run the full export analysis pipeline:
+
+```bash
+apex output-trends run --zip export.zip --out ./output_trends --zip-out ./output_trends_bundle.zip
+```
+
+Run individual steps:
+
+```bash
+apex output-trends extract --zip export.zip --out ./output_trends
+apex output-trends charts --metrics-dir ./output_trends
+apex output-trends peaks --zip export.zip --metrics-dir ./output_trends
+apex output-trends key --metrics-dir ./output_trends
+apex output-trends bundle --metrics-dir ./output_trends --zip-out ./output_trends_bundle.zip
+```

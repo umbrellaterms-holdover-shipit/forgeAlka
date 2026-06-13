@@ -100,3 +100,6 @@ cd apps/web && npm install && npm run build
 ```
 
 For the lazy full install/update/test rhythm, use [docs/bash-spellbook.md](docs/bash-spellbook.md). The spellbook exists because flags are barnacles.
+
+- [Media and prompt tools](docs/media-tools.md)
+- [Output trends pipeline](docs/output-trends.md)
