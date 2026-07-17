@@ -1,0 +1,16 @@
+﻿{
+  "name": "apex-velocity",
+  "version-string": "0.1.0",
+  "dependencies": [
+    "sdl2",
+    "sfml",
+    "boost",
+    "nlohmann-json",
+    "pugixml",
+    "rapidcsv",
+    "openssl",
+    "miniaudio",
+    "portaudio",
+    "juce"
+  ]
+}

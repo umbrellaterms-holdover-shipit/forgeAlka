@@ -62,10 +62,16 @@ apex deps install ffmpeg pandoc --dry-run
 
 ## Codespaces bootstrap
 
-Use the included script:
+On macOS/Linux:
 
 ```bash
 ./scripts/codespaces_bootstrap.sh
+```
+
+On Windows 11 (PowerShell):
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\codespaces_bootstrap.ps1
 ```
 
 Or let `.devcontainer/devcontainer.json` do it during Codespaces creation.

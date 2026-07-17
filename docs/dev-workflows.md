@@ -4,10 +4,22 @@ This guide is the boring path through common repo work. The bash spellbook has t
 
 ## Fresh Codespaces setup
 
+On macOS/Linux:
+
 ```bash
 python -m pip install -e '.[all]'
 ./scripts/codespaces_bootstrap.sh
 cd apps/web && npm install && npm run build
+```
+
+On Windows 11 (PowerShell):
+
+```powershell
+python -m pip install -e "[.all]"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\codespaces_bootstrap.ps1
+cd .\apps\web
+npm install
+npm run build
 ```
 
 Check external tools:

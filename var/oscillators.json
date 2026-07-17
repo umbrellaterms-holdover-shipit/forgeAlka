@@ -1,0 +1,14 @@
+[
+  {
+    "id": "pitch_node_left",
+    "frequency": 246.18,
+    "balance": 0.0,
+    "amplitude": 0.95
+  },
+  {
+    "id": "pitch_node_right",
+    "frequency": 286.18,
+    "balance": 1.0,
+    "amplitude": 0.95
+  }
+]

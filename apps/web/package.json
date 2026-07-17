@@ -10,9 +10,28 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
+    "@xyflow/react": "latest",
+    "axios": "latest",
+    "cytoscape": "latest",
+    "d3": "latest",
+    "fabric": "latest",
+    "konva": "latest",
+    "lodash": "latest",
+    "lucide-react": "latest",
+    "pixi.js": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-markdown": "latest",
+    "react-router-dom": "latest",
+    "vite": "latest"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/d3": "latest",
+    "@types/lodash": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest"
+  },
+  "allowScripts": {
+    "canvas@3.2.3": true
+  }
 }

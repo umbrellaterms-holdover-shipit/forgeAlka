@@ -6,15 +6,47 @@ The repo is intentionally boring at the edges: file-backed secrets, local JSON s
 
 ## Fast start
 
+First, because everything is fucking stupid, you have to create a virtualenv (we're using 3.12 because tracking the head is unstable and even 3.14 is poorly supported)
+
+```
+py -3.12 -m venv .venv
+```
+
+Then activate it
+
+```
+.\.venv\Scripts\Activate.ps1
+```
+
+On macOS/Linux:
+
 ```bash
+python -m pip install --upgrade pip
 python -m pip install -e '.[all]'
 ./scripts/codespaces_bootstrap.sh
 ```
+
+On Windows 11 (PowerShell):
+
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -e ".[all]"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\codespaces_bootstrap.ps1
+```
+
+If you are using WSL or Git Bash on Windows, you may also run the existing bash script from the repository root.
 
 Set the OpenRouter key using a file, not an environment variable:
 
 ```bash
 printf "sk-or-..." | apex keys set openrouter --stdin
+apex keys status openrouter
+```
+
+In PowerShell:
+
+```powershell
+Get-Content -Raw .\openrouter.key | apex keys set openrouter --stdin
 apex keys status openrouter
 ```
 
